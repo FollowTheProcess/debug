@@ -72,7 +72,7 @@ func Debug(value any) {
 		formatted, err := format.Source([]byte(val))
 		if err != nil {
 			// If we couldn't format it nicely, just print the raw value
-			fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %s\n", fset.Position(call.Fun.Pos()), buf.String(), val)
+			fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %v\n", fset.Position(call.Fun.Pos()), buf.String(), val)
 		} else {
 			// We could format the value with gofmt, so use that
 			fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %s\n", fset.Position(call.Fun.Pos()), buf.String(), string(formatted))
