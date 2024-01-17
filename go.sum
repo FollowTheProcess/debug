@@ -1,0 +1,4 @@
+github.com/FollowTheProcess/test v0.8.0 h1:gYmsWncLAu9ufbY9TKfzRg7F0WyFMJPYXE1HCvSJmQk=
+github.com/FollowTheProcess/test v0.8.0/go.mod h1:9oxZcKkTAgz3bZMiHPtYCytdPcvICS+AAp5mzZzB2oA=
+github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
+github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
