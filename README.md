@@ -56,7 +56,7 @@ func main() {
 ```
 
 ```shell
-DEBUG: [/Users/you/projects/myproject/main.go:7:3] something = hello
+DEBUG: [/Users/you/projects/myproject/main.go:7:3] something = "hello"
 ```
 
 - Source info, yay! 🎉
