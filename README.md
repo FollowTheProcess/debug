@@ -13,7 +13,7 @@ Like Rust's [dbg macro], but for Go!
 
 `debug` provides a simple, elegant mechanism to streamline "print debugging", inspired by Rust's [dbg macro]
 
-> [!NOTE]
+> [!WARNING]
 > This is not intended for logging in production, more to enable quick local debugging while iterating. `debug.Debug` should **not** make it into your production code
 
 ## Installation
