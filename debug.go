@@ -45,7 +45,7 @@ func Debug(value any) {
 
 		// We already know the line from runtime.Caller so that gives us an easy filter straight away
 		if start.Line == line {
-			// If the node we're currently visiting is a call expression
+			// If the node we're currently visiting is a call expression, i.e. a function call
 			if parsed, ok := node.(*ast.CallExpr); ok {
 				// If it's specifically a call to debug.Debug
 				if isDebugCall(parsed.Fun) {
