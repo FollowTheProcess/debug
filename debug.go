@@ -43,25 +43,33 @@ func Debug(value any) {
 
 		start := fset.Position(node.Pos())
 
-		// We already know the line from runtime.Caller so that gives us an easy filter straight away
-		if start.Line == line {
-			// If the node we're currently visiting is a call expression, i.e. a function call
-			if parsed, ok := node.(*ast.CallExpr); ok {
-				// If it's specifically a call to debug.Debug
-				if isDebugCall(parsed.Fun) {
-					// Debug takes a single argument and it's not variadic so len(parsed.Args) will
-					// be enforced at compile time to be 1
-					arg := parsed.Args[0]
-					buf := &bytes.Buffer{}
-					printer.Fprint(buf, fset, arg)
-					fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %#v\n", fset.Position(parsed.Fun.Pos()), buf.String(), value)
-					return false // Found it
-				}
-			}
+		// We already know the line from runtime.Caller so if it's not the right line, keep looking
+		if start.Line != line {
+			return true
 		}
 
-		// We've not found a debug.Debug call yet, keep going
-		return true
+		// If the node we're currently visiting is not a function call, keep looking
+		call, ok := node.(*ast.CallExpr)
+		if !ok {
+			return true
+		}
+
+		// If the function call is not a call to debug.Debug, keep looking
+		if !isDebugCall(call.Fun) {
+			return true
+		}
+
+		// By now we know it's a function call, and we know the function the user is calling
+		// is debug.Debug
+
+		// Debug takes a single argument and it's not variadic so len(parsed.Args) will
+		// be enforced at compile time to be 1
+		arg := call.Args[0]
+		buf := &bytes.Buffer{}
+		printer.Fprint(buf, fset, arg)
+		fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %#v\n", fset.Position(call.Fun.Pos()), buf.String(), value)
+
+		return false // Found it
 	})
 }
 
