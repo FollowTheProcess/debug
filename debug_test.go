@@ -44,6 +44,17 @@ type Person struct {
 	notExported string
 }
 
+// Large is a struct with a few fields to test the formatting.
+type Large struct {
+	SomeMap          map[string]int
+	Name             string
+	Address          string
+	Friends          []string
+	Age              int
+	Exists           bool
+	AverageSomething float64
+}
+
 // List of testcases for TestDebug, keep this below TestDebug as that way adding more cases
 // won't change any of the line numbers in existing tests.
 //
@@ -78,12 +89,12 @@ var testcases = []testcase{
 	{
 		name: "anonymous struct unexported fields",
 		arg:  struct{ name string }{name: "dave"},
-		want: `DEBUG: [%s:25:5] tt.arg = struct { name string }{name:"dave"}`,
+		want: `DEBUG: [%s:25:5] tt.arg = struct{ name string }{name: "dave"}`,
 	},
 	{
 		name: "anonymous struct exported fields",
 		arg:  struct{ Name string }{Name: "dave"},
-		want: `DEBUG: [%s:25:5] tt.arg = struct { Name string }{Name:"dave"}`,
+		want: `DEBUG: [%s:25:5] tt.arg = struct{ Name string }{Name: "dave"}`,
 	},
 	{
 		name: "struct with mixed fields",
@@ -91,12 +102,35 @@ var testcases = []testcase{
 			Exported:    "yes",
 			notExported: "no",
 		},
-		want: `DEBUG: [%s:25:5] tt.arg = debug_test.Person{Exported:"yes", notExported:"no"}`,
+		want: `DEBUG: [%s:25:5] tt.arg = debug_test.Person{Exported: "yes", notExported: "no"}`,
 	},
 	{
 		name: "map",
 		arg:  map[string]bool{"good": true, "bad": false},
-		want: `DEBUG: [%s:25:5] tt.arg = map[string]bool{"bad":false, "good":true}`,
+		want: `DEBUG: [%s:25:5] tt.arg = map[string]bool{"bad": false, "good": true}`,
+	},
+	{
+		name: "large struct",
+		arg: Large{
+			SomeMap: map[string]int{
+				"one":   1,
+				"two":   2,
+				"three": 3,
+			},
+			Name:    "Dave",
+			Address: "1 Dave Road, Dave Town, DAV1 3SU",
+			Friends: []string{
+				"Alex",
+				"John",
+				"Mary",
+				"Bob",
+				"Gary",
+			},
+			Age:              29,
+			Exists:           true,
+			AverageSomething: 27.6156,
+		},
+		want: `DEBUG: [%s:25:5] tt.arg = debug_test.Large{SomeMap: map[string]int{"one": 1, "three": 3, "two": 2}, Name: "Dave", Address: "1 Dave Road, Dave Town, DAV1 3SU", Friends: []string{"Alex", "John", "Mary", "Bob", "Gary"}, Age: 29, Exists: true, AverageSomething: 27.6156}`,
 	},
 }
 

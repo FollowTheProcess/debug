@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
+	"go/format"
 	"go/parser"
 	"go/printer"
 	"go/token"
@@ -65,9 +66,17 @@ func Debug(value any) {
 		// Debug takes a single argument and it's not variadic so len(parsed.Args) will
 		// be enforced at compile time to be 1
 		arg := call.Args[0]
+		val := fmt.Sprintf("%#v", value)
 		buf := &bytes.Buffer{}
 		printer.Fprint(buf, fset, arg)
-		fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %#v\n", fset.Position(call.Fun.Pos()), buf.String(), value)
+		formatted, err := format.Source([]byte(val))
+		if err != nil {
+			// If we couldn't format it nicely, just print the raw value
+			fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %s\n", fset.Position(call.Fun.Pos()), buf.String(), val)
+		} else {
+			// We could format the value with gofmt, so use that
+			fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %s\n", fset.Position(call.Fun.Pos()), buf.String(), string(formatted))
+		}
 
 		return false // Found it
 	})
