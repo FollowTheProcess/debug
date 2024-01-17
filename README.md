@@ -13,6 +13,9 @@ Like Rust's [dbg macro], but for Go!
 
 `debug` provides a simple, elegant mechanism to streamline "print debugging", inspired by Rust's [dbg macro]
 
+> [!NOTE]
+> This is not intended for logging in production, more to enable quick local debugging while iterating. `debug.Debug` should **not** make it into your production code
+
 ## Installation
 
 ```shell
@@ -56,7 +59,7 @@ func main() {
 ```
 
 ```shell
-DEBUG: [/Users/you/projects/myproject/main.go:7:3] something = hello
+DEBUG: [/Users/you/projects/myproject/main.go:7:3] something = "hello"
 ```
 
 - Source info, yay! 🎉

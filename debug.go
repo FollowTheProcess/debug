@@ -20,7 +20,7 @@ import (
 // Any internal error is printed to stderr and the process halted.
 //
 //	something := "hello"
-//	debug.Debug(something) // DEBUG: [/Users/you/projects/myproject/main.go:30:3] something = hello
+//	debug.Debug(something) // DEBUG: [/Users/you/projects/myproject/main.go:30:3] something = "hello"
 func Debug(value any) {
 	_, file, line, ok := runtime.Caller(1) // Skip: 1 so this file gets skipped
 	if !ok {
@@ -49,10 +49,12 @@ func Debug(value any) {
 			if parsed, ok := node.(*ast.CallExpr); ok {
 				// If it's specifically a call to debug.Debug
 				if isDebugCall(parsed.Fun) {
-					arg := parsed.Args[0] // Debug takes a single argument
+					// Debug takes a single argument and it's not variadic so len(parsed.Args) will
+					// be enforced at compile time to be 1
+					arg := parsed.Args[0]
 					buf := &bytes.Buffer{}
 					printer.Fprint(buf, fset, arg)
-					fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %v\n", fset.Position(parsed.Fun.Pos()), buf.String(), value)
+					fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %#v\n", fset.Position(parsed.Fun.Pos()), buf.String(), value)
 					return false // Found it
 				}
 			}
