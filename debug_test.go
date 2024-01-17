@@ -30,7 +30,7 @@ func TestDebug(t *testing.T) {
 		debug.Debug(aString)
 	}
 
-	out := captureStdout(t, runDebug)
+	out := captureStderr(t, runDebug)
 
 	want := fmt.Sprintf(`DEBUG: [%[1]s:28:3] anInt = 2
 DEBUG: [%[1]s:29:3] aBool = true
@@ -40,11 +40,11 @@ DEBUG: [%[1]s:30:3] aString = hello world
 	test.Diff(t, out, want)
 }
 
-func captureStdout(t *testing.T, printer func()) string {
+func captureStderr(t *testing.T, printer func()) string {
 	t.Helper()
-	old := os.Stdout // Backup of the real one
+	old := os.Stderr // Backup of the real one
 	defer func() {
-		os.Stdout = old // Set it back even if we error later
+		os.Stderr = old // Set it back even if we error later
 	}()
 
 	r, w, err := os.Pipe()
@@ -53,7 +53,7 @@ func captureStdout(t *testing.T, printer func()) string {
 	}
 
 	// Set stdout to our new pipe
-	os.Stdout = w
+	os.Stderr = w
 
 	capture := make(chan string)
 	// Copy in a goroutine so printing can't block forever

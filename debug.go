@@ -1,4 +1,7 @@
-// Package debug is a placeholder for something cool.
+// Package debug provides an easy mechanism to enable and streamline "print debugging"
+// inspired by Rust's [dbg macro].
+//
+// [dbg macro]: https://doc.rust-lang.org/stable/std/macro.dbg.html
 package debug
 
 import (
@@ -12,7 +15,12 @@ import (
 	"runtime"
 )
 
-// Debug prints useful debugging information of any value or expression to the console.
+// Debug prints the file, line number and the value to stderr in a nice human-readable format.
+//
+// Any internal error is printed to stderr and the process halted.
+//
+//	something := "hello"
+//	debug.Debug(something) // DEBUG: [/Users/you/projects/myproject/main.go:30:3] something = hello
 func Debug(value any) {
 	_, file, line, ok := runtime.Caller(1) // Skip: 1 so this file gets skipped
 	if !ok {
@@ -25,6 +33,7 @@ func Debug(value any) {
 	f, err := parser.ParseFile(fset, file, nil, parser.ParseComments)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "DEBUG: Failed to parse %s: %v\n", file, err)
+		return
 	}
 
 	ast.Inspect(f, func(node ast.Node) bool {
@@ -36,14 +45,14 @@ func Debug(value any) {
 
 		// We already know the line from runtime.Caller so that gives us an easy filter straight away
 		if start.Line == line {
-			// If the node we're currently visiting is a call expression
+			// If the node we're currently visiting is a call expression, i.e. a function call
 			if parsed, ok := node.(*ast.CallExpr); ok {
 				// If it's specifically a call to debug.Debug
 				if isDebugCall(parsed.Fun) {
 					arg := parsed.Args[0] // Debug takes a single argument
 					buf := &bytes.Buffer{}
 					printer.Fprint(buf, fset, arg)
-					fmt.Printf("DEBUG: [%v] %v = %v\n", fset.Position(parsed.Fun.Pos()), buf.String(), value)
+					fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %v\n", fset.Position(parsed.Fun.Pos()), buf.String(), value)
 					return false // Found it
 				}
 			}
