@@ -63,18 +63,22 @@ func Debug(value any) {
 		// By now we know it's a function call, and we know the function the user is calling
 		// is debug.Debug
 
-		// Debug takes a single argument and it's not variadic so len(parsed.Args) will
-		// be enforced at compile time to be 1
+		// Debug takes a single argument and it's not variadic so len(parsed.Args) == 1 is enforced
+		// at compile time
 		arg := call.Args[0]
 		val := fmt.Sprintf("%#v", value)
+
+		// Pretty print the arg node to display it
 		buf := &bytes.Buffer{}
 		printer.Fprint(buf, fset, arg)
+
+		// Run go fmt on the value to ensure a canonical format
 		formatted, err := format.Source([]byte(val))
 		if err != nil {
 			// If we couldn't format it nicely, just print the raw value
 			fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %v\n", fset.Position(call.Fun.Pos()), buf.String(), val)
 		} else {
-			// We could format the value with gofmt, so use that
+			// We could format the value with go fmt, so use that
 			fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %s\n", fset.Position(call.Fun.Pos()), buf.String(), string(formatted))
 		}
 
