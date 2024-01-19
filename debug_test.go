@@ -1,10 +1,7 @@
 package debug_test
 
 import (
-	"bytes"
 	"fmt"
-	"io"
-	"os"
 	"runtime"
 	"testing"
 
@@ -21,12 +18,13 @@ func TestDebug(t *testing.T) {
 
 	for _, tt := range testcases {
 		t.Run(tt.name, func(t *testing.T) {
-			run := func() {
+			run := func() error {
 				debug.Debug(tt.arg)
+				return nil
 			}
-			got := captureStderr(t, run)
+			_, stderr := test.CaptureOutput(t, run)
 			want := fmt.Sprintf(tt.want, file) + "\n"
-			test.Equal(t, got, want)
+			test.Equal(t, stderr, want)
 		})
 	}
 }
@@ -64,37 +62,37 @@ var testcases = []testcase{
 	{
 		name: "int",
 		arg:  2,
-		want: "DEBUG: [%s:25:5] tt.arg = 2",
+		want: "DEBUG: [%s:22:5] tt.arg = 2",
 	},
 	{
 		name: "float",
 		arg:  3.14159,
-		want: "DEBUG: [%s:25:5] tt.arg = 3.14159",
+		want: "DEBUG: [%s:22:5] tt.arg = 3.14159",
 	},
 	{
 		name: "bool",
 		arg:  true,
-		want: "DEBUG: [%s:25:5] tt.arg = true",
+		want: "DEBUG: [%s:22:5] tt.arg = true",
 	},
 	{
 		name: "string",
 		arg:  "hello world",
-		want: `DEBUG: [%s:25:5] tt.arg = "hello world"`,
+		want: `DEBUG: [%s:22:5] tt.arg = "hello world"`,
 	},
 	{
 		name: "slice",
 		arg:  []int{1, 2, 3, 4},
-		want: "DEBUG: [%s:25:5] tt.arg = []int{1, 2, 3, 4}",
+		want: "DEBUG: [%s:22:5] tt.arg = []int{1, 2, 3, 4}",
 	},
 	{
 		name: "anonymous struct unexported fields",
 		arg:  struct{ name string }{name: "dave"},
-		want: `DEBUG: [%s:25:5] tt.arg = struct{ name string }{name: "dave"}`,
+		want: `DEBUG: [%s:22:5] tt.arg = struct{ name string }{name: "dave"}`,
 	},
 	{
 		name: "anonymous struct exported fields",
 		arg:  struct{ Name string }{Name: "dave"},
-		want: `DEBUG: [%s:25:5] tt.arg = struct{ Name string }{Name: "dave"}`,
+		want: `DEBUG: [%s:22:5] tt.arg = struct{ Name string }{Name: "dave"}`,
 	},
 	{
 		name: "struct with mixed fields",
@@ -102,12 +100,12 @@ var testcases = []testcase{
 			Exported:    "yes",
 			notExported: "no",
 		},
-		want: `DEBUG: [%s:25:5] tt.arg = debug_test.Person{Exported: "yes", notExported: "no"}`,
+		want: `DEBUG: [%s:22:5] tt.arg = debug_test.Person{Exported: "yes", notExported: "no"}`,
 	},
 	{
 		name: "map",
 		arg:  map[string]bool{"good": true, "bad": false},
-		want: `DEBUG: [%s:25:5] tt.arg = map[string]bool{"bad": false, "good": true}`,
+		want: `DEBUG: [%s:22:5] tt.arg = map[string]bool{"bad": false, "good": true}`,
 	},
 	{
 		name: "large struct",
@@ -130,39 +128,6 @@ var testcases = []testcase{
 			Exists:           true,
 			AverageSomething: 27.6156,
 		},
-		want: `DEBUG: [%s:25:5] tt.arg = debug_test.Large{SomeMap: map[string]int{"one": 1, "three": 3, "two": 2}, Name: "Dave", Address: "1 Dave Road, Dave Town, DAV1 3SU", Friends: []string{"Alex", "John", "Mary", "Bob", "Gary"}, Age: 29, Exists: true, AverageSomething: 27.6156}`,
+		want: `DEBUG: [%s:22:5] tt.arg = debug_test.Large{SomeMap: map[string]int{"one": 1, "three": 3, "two": 2}, Name: "Dave", Address: "1 Dave Road, Dave Town, DAV1 3SU", Friends: []string{"Alex", "John", "Mary", "Bob", "Gary"}, Age: 29, Exists: true, AverageSomething: 27.6156}`,
 	},
-}
-
-func captureStderr(t *testing.T, printer func()) string {
-	t.Helper()
-	old := os.Stderr // Backup of the real one
-	defer func() {
-		os.Stderr = old // Set it back even if we error later
-	}()
-
-	r, w, err := os.Pipe()
-	if err != nil {
-		t.Fatalf("os.Pipe() returned an error: %v", err)
-	}
-
-	// Set stdout to our new pipe
-	os.Stderr = w
-
-	capture := make(chan string)
-	// Copy in a goroutine so printing can't block forever
-	go func() {
-		buf := new(bytes.Buffer)
-		io.Copy(buf, r) //nolint: errcheck
-		capture <- buf.String()
-	}()
-
-	// Call our test function that prints to stdout
-	printer()
-
-	// Close the writer
-	w.Close()
-	captured := <-capture
-
-	return captured
 }
