@@ -7,9 +7,6 @@ on:
 
 permissions: {}
 
-env:
-  GOEXPERIMENT: loopvar
-
 jobs:
   ci:
     name: CI

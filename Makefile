@@ -4,8 +4,6 @@
 COVERAGE_DATA := coverage.out
 COVERAGE_HTML := coverage.html
 
-export GOEXPERIMENT := loopvar
-
 help: ## Show the list of available tasks
 	@echo "Available Tasks:\n"
 	@grep -E '^[a-zA-Z_0-9%-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-10s %s\n", $$1, $$2}'
