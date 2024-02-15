@@ -13,9 +13,6 @@ concurrency:
 
 permissions: {}
 
-env:
-  GOEXPERIMENT: loopvar
-
 jobs:
   test:
     name: Test

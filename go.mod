@@ -1,6 +1,6 @@
 module github.com/FollowTheProcess/debug
 
-go 1.21
+go 1.22
 
 require github.com/FollowTheProcess/test v0.9.0
 
