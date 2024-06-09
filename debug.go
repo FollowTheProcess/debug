@@ -37,7 +37,15 @@ func Debug(value any) {
 		return
 	}
 
-	ast.Inspect(f, func(node ast.Node) bool {
+	ast.Inspect(f, findAndDebug(fset, line, value))
+}
+
+// findAndDebug is an AST traversal function to be passed to [go/ast.Inspect]
+// and will find calls to debug.Debug, and print the debugging information.
+//
+// It returns a closure that can be passed directly to [go/ast.Inspect].
+func findAndDebug(fset *token.FileSet, line int, value any) func(node ast.Node) bool {
+	return func(node ast.Node) bool {
 		if node == nil {
 			return false
 		}
@@ -83,7 +91,7 @@ func Debug(value any) {
 		}
 
 		return false // Found it
-	})
+	}
 }
 
 // isDebugCall takes an arbitrary AST expression and determines if it
