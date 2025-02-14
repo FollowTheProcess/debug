@@ -8,22 +8,12 @@ on:
 permissions: {}
 
 jobs:
-  ci:
-    name: CI
-    uses: FollowTheProcess/debug/.github/workflows/CI.yml@main
-    secrets: inherit
-    permissions:
-      contents: read
-
   release:
     name: Release
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: read
-
-    needs:
-      - ci
 
     steps:
       - name: Checkout Code
