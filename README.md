@@ -1,7 +1,7 @@
 # Debug
 
 [![License](https://img.shields.io/github/license/FollowTheProcess/debug)](https://github.com/FollowTheProcess/debug)
-[![Go Reference](https://pkg.go.dev/badge/github.com/FollowTheProcess/debug.svg)](https://pkg.go.dev/github.com/FollowTheProcess/debug)
+[![Go Reference](https://pkg.go.dev/badge/go.followtheprocess.codes/debug.svg)](https://pkg.go.dev/go.followtheprocess.codes/debug)
 [![Go Report Card](https://goreportcard.com/badge/github.com/FollowTheProcess/debug)](https://goreportcard.com/report/github.com/FollowTheProcess/debug)
 [![GitHub](https://img.shields.io/github/v/release/FollowTheProcess/debug?logo=github&sort=semver)](https://github.com/FollowTheProcess/debug)
 [![CI](https://github.com/FollowTheProcess/debug/workflows/CI/badge.svg)](https://github.com/FollowTheProcess/debug/actions?query=workflow%3ACI)
@@ -19,7 +19,7 @@ Like Rust's [dbg macro], but for Go!
 ## Installation
 
 ```shell
-go get github.com/FollowTheProcess/debug@latest
+go get go.followtheprocess.codes/debug@latest
 ```
 
 ## Quickstart
@@ -50,7 +50,7 @@ something = something
 ```go
 package main
 
-import "github.com/FollowTheProcess/debug"
+import "go.followtheprocess.codes/debug"
 
 func main() {
     something := "hello"

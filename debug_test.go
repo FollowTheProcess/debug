@@ -5,8 +5,8 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/FollowTheProcess/debug"
-	"github.com/FollowTheProcess/test"
+	"go.followtheprocess.codes/debug"
+	"go.followtheprocess.codes/test"
 )
 
 // Keep this on the top of this file so it doesn't mess up the line numbers in the testcases.
