@@ -2,7 +2,7 @@
 // inspired by Rust's [dbg macro].
 //
 // [dbg macro]: https://doc.rust-lang.org/stable/std/macro.dbg.html
-package debug
+package debug // import "go.followtheprocess.codes/debug"
 
 import (
 	"bytes"
