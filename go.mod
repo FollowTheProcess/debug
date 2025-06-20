@@ -2,7 +2,7 @@ module github.com/FollowTheProcess/debug
 
 go 1.24
 
-require github.com/FollowTheProcess/test v0.21.0
+require github.com/FollowTheProcess/test v0.22.0
 
 require (
 	github.com/FollowTheProcess/hue v0.5.2 // indirect
