@@ -1,6 +1,6 @@
 module go.followtheprocess.codes/debug
 
-go 1.25
+go 1.26
 
 require go.followtheprocess.codes/test v1.1.0
 
