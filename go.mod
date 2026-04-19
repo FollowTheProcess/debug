@@ -2,7 +2,7 @@ module go.followtheprocess.codes/debug
 
 go 1.26
 
-require go.followtheprocess.codes/test v1.3.0
+require go.followtheprocess.codes/test v1.4.0
 
 require (
 	go.followtheprocess.codes/diff v0.2.0 // indirect
