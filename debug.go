@@ -26,14 +26,17 @@ func Debug(value any) {
 	_, file, line, ok := runtime.Caller(1) // Skip: 1 so this file gets skipped
 	if !ok {
 		fmt.Fprintln(os.Stderr, "DEBUG: Unable to determine caller")
+
 		return
 	}
 
 	// Parse the file in question
 	fset := token.NewFileSet()
+
 	f, err := parser.ParseFile(fset, file, nil, parser.ParseComments)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "DEBUG: Failed to parse %s: %v\n", file, err)
+
 		return
 	}
 
@@ -87,7 +90,13 @@ func findAndDebug(fset *token.FileSet, line int, value any) func(node ast.Node) 
 			fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %v\n", fset.Position(call.Fun.Pos()), buf.String(), val)
 		} else {
 			// We could format the value with go fmt, so use that
-			fmt.Fprintf(os.Stderr, "DEBUG: [%v] %v = %s\n", fset.Position(call.Fun.Pos()), buf.String(), string(formatted))
+			fmt.Fprintf(
+				os.Stderr,
+				"DEBUG: [%v] %v = %s\n",
+				fset.Position(call.Fun.Pos()),
+				buf.String(),
+				string(formatted),
+			)
 		}
 
 		return false // Found it
@@ -98,6 +107,7 @@ func findAndDebug(fset *token.FileSet, line int, value any) func(node ast.Node) 
 // was a call to debug.Debug.
 func isDebugCall(expr ast.Expr) bool {
 	selector, ok := expr.(*ast.SelectorExpr)
+
 	return ok && isIdent(selector.X, "debug") && isIdent(selector.Sel, "Debug")
 }
 
@@ -105,5 +115,6 @@ func isDebugCall(expr ast.Expr) bool {
 // the expression was assigned to that name.
 func isIdent(expr ast.Expr, name string) bool {
 	ident, ok := expr.(*ast.Ident)
+
 	return ok && ident.Name == name
 }

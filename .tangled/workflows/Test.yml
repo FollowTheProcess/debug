@@ -1,0 +1,19 @@
+when:
+  - event: [push]
+    branch: [main]
+  - event: [pull_request]
+    branch: [main]
+
+engine: nixery
+
+dependencies:
+  nixpkgs/nixpkgs-unstable:
+    - go
+  nixpkgs:
+    - gcc  # Needed for CGO_ENABLED=1 (go test -race)
+
+steps:
+  - name: Test
+    environment:
+      CGO_ENABLED: "1"
+    command: go test -race ./...

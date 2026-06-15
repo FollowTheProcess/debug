@@ -20,6 +20,7 @@ func TestDebug(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			run := func() error {
 				debug.Debug(tt.arg)
+
 				return nil
 			}
 			_, stderr := test.CaptureOutput(t, run)

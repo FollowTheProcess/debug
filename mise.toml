@@ -1,0 +1,78 @@
+# Dev tasks for {{project_slug}}. Run `mise tasks` to list, `mise run <task>` to execute.
+# Extra args after `--` are appended to the task's command:
+#   mise run test -- -run TestFoo
+#   mise run bench -- -benchtime 5s
+
+[tools]
+typos = "latest"
+"go:golang.org/x/pkgsite/cmd/pkgsite" = "latest"
+golangci-lint = "latest"
+
+[vars]
+COV_DATA = "coverage.out"
+
+[tasks.tidy]
+description = "Tidy dependencies in go.mod and go.sum"
+sources = ["**/*.go", "go.mod", "go.sum"]
+run = "go mod tidy"
+
+[tasks.gen]
+description = "Run go generate"
+sources = ["**/*.go"]
+run = "go generate ./..."
+
+[tasks.fmt]
+description = "Run go fmt on all source files"
+sources = ["**/*.go", ".golangci.yml"]
+run = "golangci-lint fmt ./..."
+
+[tasks.test]
+description = "Run the test suite"
+sources = [
+  "**/*.go",
+  "go.mod",
+  "go.sum",
+  "**/testdata/**/*",
+]
+# -race needs CGO (https://go.dev/doc/articles/race_detector#Requirements)
+env = { CGO_ENABLED = "1" }
+run = "go test -race ./..."
+
+[tasks.bench]
+description = "Run all project benchmarks"
+sources = ["**/*.go"]
+run = "go test ./... -run None -benchmem -bench ."
+
+[tasks.lint]
+description = "Run linting"
+depends = ["fmt"]
+sources = ["**/*.go", ".golangci.yml"]
+run = ["golangci-lint run --fix", "typos"]
+
+[tasks.doc]
+description = "Render the pkg docs locally"
+run = "pkgsite -open"
+
+[tasks.cov]
+description = "Calculate test coverage and render the html"
+outputs = ["{{ vars.COV_DATA }}"]
+run = [
+  "go test -race -cover -covermode atomic -coverprofile {{ vars.COV_DATA }} ./...",
+  "go tool cover -html {{ vars.COV_DATA }}",
+]
+
+[tasks.check]
+description = "Run tests and linting in one"
+depends = ["test", "lint"]
+
+[tasks.sloc]
+description = "Print lines of code"
+run = "fd . -e go | xargs wc -l | sort -nr | head"
+
+[tasks.clean]
+description = "Remove build artifacts and other clutter"
+run = ["go clean ./...", "rm -rf {{ vars.COV_DATA }} ./bin ./dist"]
+
+[tasks.update]
+description = "Updates dependencies in go.mod and go.sum"
+run = ["go get -u ./...", "go mod tidy"]
