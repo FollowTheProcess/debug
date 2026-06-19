@@ -1,4 +1,4 @@
-# Dev tasks for {{project_slug}}. Run `mise tasks` to list, `mise run <task>` to execute.
+# Dev tasks. Run `mise tasks` to list, `mise run <task>` to execute.
 # Extra args after `--` are appended to the task's command:
 #   mise run test -- -run TestFoo
 #   mise run bench -- -benchtime 5s
